@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Inventario de Redes | UGB</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+</head>
+<body>
+
+    <div id="app">
+        <header>
+            <h1>📡 Sistema de Inventario de Redes</h1>
+            <p>Facultad de Ciencia y Tecnología - UGB</p>
+        </header>
+
+        <main class="container">
+            <section class="card">
+                <h3>Registrar Nuevo Equipo</h3>
+                
+                <div class="form-group">
+                    <label v-bind:title="ayudaNombre">Nombre del Dispositivo:</label>
+                    <input type="text" v-model="nuevoNombre" placeholder="Ej: Router Cisco 2911">
+                </div>
+
+                <div class="form-group">
+                    <label>Categoría:</label>
+                    <select v-model="nuevaCategoria">
+                        <option value="">Seleccione una opción...</option>
+                        <option v-for="cat in categorias" :key="cat" :value="cat">
+                            {{ cat }}
+                        </option>
+                    </select>
+                </div>
+
+                <p v-if="error" class="error-msg">❌ Error: Todos los campos son obligatorios.</p>
+
+                <button @click="agregarEquipo">Agregar al Inventario</button>
+            </section>
+
+            <section class="card">
+                <h3>Equipos en Laboratorio ({{ totalEquipos }})</h3>
+                
+                <ul v-if="inventario.length > 0">
+                    <li v-for="(item, index) in inventario" :key="index" class="item">
+                        <div>
+                            <strong>{{ item.nombre }}</strong> <br>
+                            <span class="badge">{{ item.categoria }}</span>
+                        </div>
+                        <span class="status">Activo</span>
+                    </li>
+                </ul>
+
+                <p v-else class="empty-msg">No hay equipos registrados actualmente.</p>
+            </section>
+        </main>
+    </div>
+
+    <script src="main.js"></script>
+</body>
+</html>
