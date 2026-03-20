@@ -1,54 +1,141 @@
-const { createApp, ref, computed } = Vue;
+const { createApp, ref, computed, watch } = Vue;
 
 createApp({
     setup() {
-        // --- 5 VARIABLES REACTIVAS ---
-        const inventario = ref([]);        // 1. Array de objetos
-        const nuevoNombre = ref('');      // 2. String para el input
-        const nuevaCategoria = ref('');   // 3. String para el select
-        const error = ref(false);         // 4. Booleano para validación
-        const categorias = ref([          // 5. Lista para el v-for
-            'Router', 
-            'Switch', 
-            'Servidor', 
-            'Access Point'
+        const inventario = ref([]);
+        const nuevoNombre = ref('');
+        const nuevaCategoria = ref('');
+        const nuevaMarca = ref('');
+        const nuevoModelo = ref('');
+        const nuevoEstado = ref('');
+        const error = ref(false);
+        const errorMensaje = ref('');
+
+        const categorias = ref([
+            'Router',
+            'Switch',
+            'Access Point',
+            'Cable',
+            'Servidor',
+            'Otro'
         ]);
 
-        // Variable para v-bind
-        const ayudaNombre = "Escriba el modelo exacto del dispositivo de red";
+        const ayudaNombre = 'Escriba el modelo exacto del dispositivo de red';
 
-        // Variable computada (cuenta como reactiva)
         const totalEquipos = computed(() => inventario.value.length);
 
-        // --- FUNCIÓN / EVENTO ---
-        const agregarEquipo = () => {
-            // Validación: No permitir datos vacíos (Punto 6)
-            if (nuevoNombre.value.trim() === '' || nuevaCategoria.value === '') {
-                error.value = true;
-            } else {
-                // Agregar al array
-                inventario.value.push({
-                    nombre: nuevoNombre.value,
-                    categoria: nuevaCategoria.value
-                });
+        const filtroTipo = ref('');
+        const filtroEstado = ref('');
 
-                // Limpiar campos y quitar error
-                nuevoNombre.value = '';
-                nuevaCategoria.value = '';
-                error.value = false;
+        const equiposFiltrados = computed(() => {
+            return inventario.value.filter(item => {
+                const cumpleTipo = filtroTipo.value ? item.categoria === filtroTipo.value : true;
+                const cumpleEstado = filtroEstado.value ? item.estado === filtroEstado.value : true;
+                return cumpleTipo && cumpleEstado;
+            });
+        });
+
+        const guardarLocal = () => {
+            localStorage.setItem('inventario-redes', JSON.stringify(inventario.value));
+        };
+
+        const cargarLocal = () => {
+            const guardado = localStorage.getItem('inventario-redes');
+            if (guardado) {
+                try {
+                    inventario.value = JSON.parse(guardado);
+                } catch {
+                    inventario.value = [];
+                }
             }
         };
 
-        // Retornar todo para que el HTML lo use
+        const validarRegistro = () => {
+            if ([nuevoNombre.value, nuevaCategoria.value, nuevaMarca.value, nuevoModelo.value, nuevoEstado.value].some(val => val.trim() === '')) {
+                error.value = true;
+                errorMensaje.value = 'Todos los campos obligatorios deben llenarse.';
+                return false;
+            }
+
+            const duplicado = inventario.value.some(item =>
+                item.nombre.trim().toLowerCase() === nuevoNombre.value.trim().toLowerCase() &&
+                item.marca.trim().toLowerCase() === nuevaMarca.value.trim().toLowerCase() &&
+                item.modelo.trim().toLowerCase() === nuevoModelo.value.trim().toLowerCase()
+            );
+
+            if (duplicado) {
+                error.value = true;
+                errorMensaje.value = 'Ya existe un equipo con ese nombre, marca y modelo.';
+                return false;
+            }
+
+            error.value = false;
+            errorMensaje.value = '';
+            return true;
+        };
+
+        const agregarEquipo = () => {
+            if (!validarRegistro()) return;
+
+            inventario.value.push({
+                nombre: nuevoNombre.value.trim(),
+                categoria: nuevaCategoria.value,
+                marca: nuevaMarca.value.trim(),
+                modelo: nuevoModelo.value.trim(),
+                estado: nuevoEstado.value
+            });
+
+            nuevoNombre.value = '';
+            nuevaCategoria.value = '';
+            nuevaMarca.value = '';
+            nuevoModelo.value = '';
+            nuevoEstado.value = '';
+
+            error.value = false;
+            errorMensaje.value = '';
+        };
+
+        const eliminarEquipo = (index) => {
+            inventario.value.splice(index, 1);
+        };
+
+        const toggleEstado = (item) => {
+            const estados = ['Disponible', 'Asignado', 'Mantenimiento', 'Dañado'];
+            const siguiente = estados[(estados.indexOf(item.estado) + 1) % estados.length];
+            item.estado = siguiente;
+        };
+
+        const estadoClass = (estado) => {
+            return {
+                Disponible: 'estado-disponible',
+                Asignado: 'estado-asignado',
+                Mantenimiento: 'estado-mantenimiento',
+                Dañado: 'estado-danado'
+            }[estado] || '';
+        };
+
+        watch(inventario, guardarLocal, { deep: true });
+        cargarLocal();
+
         return {
             inventario,
             nuevoNombre,
             nuevaCategoria,
+            nuevaMarca,
+            nuevoModelo,
+            nuevoEstado,
             error,
+            errorMensaje,
             categorias,
             ayudaNombre,
             totalEquipos,
-            agregarEquipo
-        }
+            filtroTipo,
+            filtroEstado,
+            equiposFiltrados,
+            agregarEquipo,
+            eliminarEquipo,
+            toggleEstado,
+            estadoClass
+        };
     }
 }).mount('#app');

@@ -69,13 +69,59 @@ button:hover {
     font-size: 14px;
 }
 
+.filter-group {
+    display: grid;
+    gap: 10px;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    margin-bottom: 15px;
+}
+
 .item {
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: flex-start;
     padding: 10px;
     border-bottom: 1px solid #eee;
+    gap: 12px;
+    flex-wrap: wrap;
 }
+
+.item-info {
+    flex: 1 1 240px;
+}
+
+.item-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 180px;
+}
+
+.item-actions button {
+    width: auto;
+    padding: 6px 10px;
+}
+
+.estado-disponible {
+    background: #28a745;
+    color: white;
+}
+
+.estado-asignado {
+    background: #ffc107;
+    color: black;
+}
+
+.estado-mantenimiento {
+    background: #17a2b8;
+    color: white;
+}
+
+.estado-danado {
+    background: #dc3545;
+    color: white;
+}
+
 
 .badge {
     background: #6c757d;

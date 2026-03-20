@@ -1,36 +1,80 @@
+Laboratorio 1 Segundo Cómputo – Semana 9
+Objetivo: Evaluar que el estudiante comprenda el uso del framework Vue de JavaScript para realizar interfaces gráficas.
+
 1. Situación Problemática
-Enunciado: En el Laboratorio de Redes de la Facultad de Ciencia y Tecnología, el inventario de equipos físicos (Routers, Switches, Access Points) se gestiona actualmente de forma manual o mediante hojas de cálculo estáticas que no se actualizan en tiempo real. Esto genera confusión cuando los estudiantes o técnicos necesitan saber qué dispositivos están disponibles para realizar prácticas de configuración o cuáles han sido asignados a un rack específico.
+En el Laboratorio de Redes de la Facultad de Ciencia y Tecnología, el inventario de equipos físicos (routers, switches, access points, cables, servidores, etc.) se maneja actualmente de forma manual mediante hojas de cálculo estáticas o registros en papel. Estos documentos no se actualizan en tiempo real, lo que provoca:
 
-Sectores enfocados: * Sector Educativo: Gestión de recursos de laboratorios universitarios.
+- Confusión al planificar prácticas (¿qué equipo está libre? ¿cuál está asignado a un rack o en mantenimiento?).
+- Pérdida de tiempo buscando dispositivos.
+- Riesgo de asignar el mismo equipo a dos grupos simultáneamente.
+- Dificultad para controlar mantenimientos preventivos o fallos recurrentes.
 
-Sector de Soporte Técnico y Redes: Control de stock de hardware para infraestructura de TI.
+Sectores enfocados
+- Educación superior (laboratorios de redes y telecomunicaciones).
+- Técnicos y docentes del laboratorio.
+- Estudiantes en prácticas de configuración (CCNA, redes locales, inalámbricas, etc.).
 
-Descripción de funciones: Nuestra aplicación resuelve este problema permitiendo:
+2. Cómo resuelve la aplicación
+La aplicación web (sin backend, solo frontend con Vue.js) permite:
 
-Registro Dinámico: Agregar equipos al inventario con su nombre técnico y categoría.
+- Registrar y visualizar en tiempo real equipos con campos completos: tipo, marca, modelo y estado.
+- Filtrar por tipo y estado.
+- Cambiar estado rápido (Disponible ↔ Asignado ↔ Mantenimiento ↔ Dañado).
+- Eliminar equipos.
+- Validar datos obligatorios y evitar duplicados por combinacion nombre-marca-modelo.
+- Persistir datos localmente con localStorage (mantiene inventario tras cerrar o recargar navegador).
 
-Validación en Tiempo Real: Evitar registros incompletos que ensucien la base de datos.
+3. Requisitos cumplidos (semana)
+- 5+ etiquetas HTML distintas: header, main, section, form, label, input, select, button, ul, li, etc.
+- Inputs + validación (no vacío, no duplicados por número de serie).
+- 5+ variables reactivas en Vue: inventario, nuevoNombre, nuevaCategoria, nuevaMarca, nuevoModelo, nuevoSerie, nuevaIP, nuevaUbicacion, nuevoEstado, filtroTipo, filtroEstado y más.
+- Uso de v-model, v-bind, v-for, v-if.
+- Eventos @click, @submit.
 
-Visualización Instantánea: Listar todos los equipos registrados mediante una interfaz reactiva que se actualiza sin recargar la página.
+4. Estructura de funciones implementadas
+- agregarEquipo: valida, registra en array, limpia campos.
+- eliminarEquipo: quita el equipo por número de serie.
+- toggleEstado: rota entre estados definidos.
+- equiposFiltrados: Hace búsqueda dinámica según filtros.
+- localStorage para persistencia.
 
-7. Respuestas a Preguntas de la Guía
-¿Qué es Vue.js y cuál es su función? Es un framework de JavaScript "progresivo" utilizado para construir interfaces de usuario. Su función en nuestra página es manejar la reactividad; es decir, permite que el sitio web responda instantáneamente a lo que el usuario escribe o hace (como agregar un equipo) sin tener que refrescar todo el navegador.
+5. ¿Qué falta para versión productiva?
+- Backend (API + BD) para multiusuario y sincronización en la nube.
+- Autenticación de usuarios.
+- BUSCAR/ORDENAR por palabra clave, rack, marca.
+- Historial de cambios y auditoría.
+- Modo móvil optimizado (responsive avanzado).
 
-Variables reactivas utilizadas: 
-1.  inventario: Array que almacena los objetos (equipos) registrados.
-2.  nuevoNombre: Almacena el texto que el usuario escribe en el input del nombre.
-3.  nuevaCategoria: Guarda la opción seleccionada en el menú desplegable.
-4.  error: Booleano que controla si se muestra o no el mensaje de validación.
-5.  categorias: Lista de opciones fijas para clasificar los dispositivos.
+6. Respuestas a guía
+¿Qué es Vue.js y cuál es su función?
+Vue.js es un framework progresivo de JavaScript para construir interfaces reactivas. Permite actualizar la vista automáticamente cuando cambian los datos.
 
-Diferencia entre v-bind y v-model: * v-bind: Se usa para enlazar una variable a un atributo de HTML (como un title, src o una class). Es de una sola vía (del código a la vista).
+Variables reactivas usadas:
+1. inventario (array de equipos)
+2. nuevoNombre
+3. nuevaCategoria
+4. nuevaMarca
+5. nuevoModelo
+6. nuevoSerie
+7. nuevaIP
+8. nuevaUbicacion
+9. nuevoEstado
+10. error y errorMensaje
+11. filtroTipo
+12. filtroEstado
 
-v-model: Se usa para el enlace bidireccional de datos en inputs. Lo que el usuario escribe cambia la variable, y si la variable cambia en el código, el input se actualiza.
+Diferencia entre v-bind y v-model:
+- v-bind enlaza valores de datos al atributo del HTML (solo lectura de datos).
+- v-model crea enlace bidireccional (datos <-> input).
 
-Ejemplo de evento utilizado: Utilizamos el evento de clic mediante @click="agregarEquipo" en el botón de registro. Al presionarlo, dispara la función que valida y guarda los datos.
+Ejemplo de evento utilizado:
+- @submit.prevent="agregarEquipo" en el formulario (evita recarga).
+- @click en botones (cambia estado, elimina registro).
 
-¿Para qué utilizó la directiva v-for? La utilizamos para recorrer el array inventario y generar automáticamente una etiqueta <li> por cada equipo registrado, mostrando así la lista completa de forma dinámica.
+¿Para qué se usa v-for?
+Para iterar sobre el array inventario y renderizar un <li> por cada equipo.
 
-Uso de v-if y problema que resuelve: Se utilizó para mostrar el mensaje de error cuando los campos están vacíos y para ocultar la lista de equipos cuando no hay registros. Resuelve el problema de la retroalimentación al usuario, evitando que se procesen datos incorrectos o que la pantalla se vea vacía sin explicación.
+Uso de v-if y problema que resuelve:
+- Muestra mensajes condicionales (error de validación, inventario vacío) evitando pantalla estática.
 
-Validación de datos: Se realiza mediante una condicional if en la función agregarEquipo, verificando que los strings no estén vacíos. Es importante validar para garantizar la integridad de la información y evitar errores en el procesamiento de datos por parte del sistema.
+La versión actual está lista para pruebas y entrega de la semana. Puedes seguir con el paso adicional de controlar también “responsable de la práctica” y “fecha de asignación”.

@@ -18,41 +18,83 @@
         <main class="container">
             <section class="card">
                 <h3>Registrar Nuevo Equipo</h3>
-                
-                <div class="form-group">
-                    <label v-bind:title="ayudaNombre">Nombre del Dispositivo:</label>
-                    <input type="text" v-model="nuevoNombre" placeholder="Ej: Router Cisco 2911">
-                </div>
+                <form @submit.prevent="agregarEquipo">
+                    <div class="form-group">
+                        <label v-bind:title="ayudaNombre">Nombre del Dispositivo:</label>
+                        <input type="text" v-model="nuevoNombre" placeholder="Ej: Router Cisco 2911">
+                    </div>
 
-                <div class="form-group">
-                    <label>Categoría:</label>
-                    <select v-model="nuevaCategoria">
-                        <option value="">Seleccione una opción...</option>
-                        <option v-for="cat in categorias" :key="cat" :value="cat">
-                            {{ cat }}
-                        </option>
-                    </select>
-                </div>
+                    <div class="form-group">
+                        <label>Tipo:</label>
+                        <select v-model="nuevaCategoria">
+                            <option value="">Seleccione...</option>
+                            <option v-for="cat in categorias" :key="cat" :value="cat">{{ cat }}</option>
+                        </select>
+                    </div>
 
-                <p v-if="error" class="error-msg">❌ Error: Todos los campos son obligatorios.</p>
+                    <div class="form-group">
+                        <label>Marca:</label>
+                        <input type="text" v-model="nuevaMarca" placeholder="Ej: Cisco">
+                    </div>
 
-                <button @click="agregarEquipo">Agregar al Inventario</button>
+                    <div class="form-group">
+                        <label>Modelo:</label>
+                        <input type="text" v-model="nuevoModelo" placeholder="Ej: 2911">
+                    </div>
+
+
+                    <div class="form-group">
+                        <label>Estado:</label>
+                        <select v-model="nuevoEstado">
+                            <option value="">Seleccione...</option>
+                            <option value="Dispo">Disponible</option>
+                            <option value="Asignado">Asignado</option>
+                            <option value="Mantenimiento">Mantenimiento</option>
+                            <option value="Dañado">Dañado</option>
+                        </select>
+                    </div>
+
+                    <p v-if="error" class="error-msg">❌ {{ errorMensaje }}</p>
+                    <button type="submit">Agregar al Inventario</button>
+                </form>
             </section>
 
             <section class="card">
+                <h3>Filtro y Búsqueda</h3>
+                <div class="filter-group">
+                    <label>Filtrar por tipo:</label>
+                    <select v-model="filtroTipo">
+                        <option value="">Todos</option>
+                        <option v-for="cat in categorias" :key="cat" :value="cat">{{ cat }}</option>
+                    </select>
+
+                    <label>Filtrar por estado:</label>
+                    <select v-model="filtroEstado">
+                        <option value="">Todos</option>
+                        <option value="Disponible">Disponible</option>
+                        <option value="Asignado">Asignado</option>
+                        <option value="Mantenimiento">Mantenimiento</option>
+                        <option value="Dañado">Dañado</option>
+                    </select>
+                </div>
+
                 <h3>Equipos en Laboratorio ({{ totalEquipos }})</h3>
-                
-                <ul v-if="inventario.length > 0">
-                    <li v-for="(item, index) in inventario" :key="index" class="item">
-                        <div>
-                            <strong>{{ item.nombre }}</strong> <br>
-                            <span class="badge">{{ item.categoria }}</span>
+
+                <ul v-if="equiposFiltrados.length > 0">
+                    <li v-for="(item, index) in equiposFiltrados" :key="index" class="item">
+                        <div class="item-info">
+                            <strong>{{ item.nombre }}</strong>
+                            <small>{{ item.marca }} / Modelo: {{ item.modelo }}</small>
                         </div>
-                        <span class="status">Activo</span>
+                        <div class="item-actions">
+                            <span class="badge" :class="estadoClass(item.estado)">{{ item.estado }}</span>
+                            <button @click="toggleEstado(item)">Cambiar Estado</button>
+                            <button @click="eliminarEquipo(index)">Eliminar</button>
+                        </div>
                     </li>
                 </ul>
 
-                <p v-else class="empty-msg">No hay equipos registrados actualmente.</p>
+                <p v-else class="empty-msg">No hay equipos que coincidan con el filtro o aún no hay registros.</p>
             </section>
         </main>
     </div>
