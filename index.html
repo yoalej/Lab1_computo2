@@ -47,7 +47,7 @@
                         <label>Estado:</label>
                         <select v-model="nuevoEstado">
                             <option value="">Seleccione...</option>
-                            <option value="Dispo">Disponible</option>
+                            <option value="Disponible">Disponible</option>
                             <option value="Asignado">Asignado</option>
                             <option value="Mantenimiento">Mantenimiento</option>
                             <option value="Dañado">Dañado</option>
@@ -89,8 +89,9 @@
                         <div class="item-actions">
                             <span class="badge" :class="estadoClass(item.estado)">{{ item.estado }}</span>
                             <button @click="toggleEstado(item)">Cambiar Estado</button>
-                            <button @click="eliminarEquipo(index)">Eliminar</button>
+                            <button @click="eliminarEquipo(item)">Eliminar</button>
                         </div>
+                        <span class="status">Activo</span>
                     </li>
                 </ul>
 

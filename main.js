@@ -95,13 +95,17 @@ createApp({
             errorMensaje.value = '';
         };
 
-        const eliminarEquipo = (index) => {
-            inventario.value.splice(index, 1);
+        const eliminarEquipo = (item) => {
+            const idx = inventario.value.indexOf(item);
+            if (idx !== -1) {
+                inventario.value.splice(idx, 1);
+            }
         };
 
         const toggleEstado = (item) => {
             const estados = ['Disponible', 'Asignado', 'Mantenimiento', 'Dañado'];
-            const siguiente = estados[(estados.indexOf(item.estado) + 1) % estados.length];
+            const currentIndex = estados.indexOf(item.estado);
+            const siguiente = currentIndex === -1 ? 'Disponible' : estados[(currentIndex + 1) % estados.length];
             item.estado = siguiente;
         };
 
