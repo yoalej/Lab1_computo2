@@ -33,7 +33,7 @@ La aplicación web (frontend puro con **Vue.js 3**, sin backend por el momento) 
 - Validar datos obligatorios y evitar duplicados (por combinación de número de serie o nombre-marca-modelo).  
 - **Persistir los datos** en el navegador usando **localStorage** (el inventario se mantiene aunque se cierre o recargue la página).
 
-## 3. Requisitos cumplidos (Semana 7 – Vue.js)
+## 3. Requisitos cumplidos
 
 - Uso de **más de 5 etiquetas HTML** distintas: `<header>`, `<main>`, `<section>`, `<form>`, `<label>`, `<input>`, `<select>`, `<button>`, `<ul>`, `<li>`, etc.  
 - Entradas con **validación** (campos obligatorios no vacíos, evitar duplicados por número de serie).  
